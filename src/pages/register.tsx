@@ -15,8 +15,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
 import { loginApi } from "../utils/api/userAuth";
 import Cookies from 'js-cookie';
-import { RegisterFormData } from "../interface";
+import { RegisterFormData } from "../interface"; // Importing form data interface
 
+// Copyright component to display footer copyright information
 function Copyright(props: any) {
   return (
     <Typography
@@ -26,7 +27,7 @@ function Copyright(props: any) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://www.sasqnet.com/">
         SasqNet
       </Link>{" "}
       {new Date().getFullYear()}
@@ -35,38 +36,46 @@ function Copyright(props: any) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
+// Create a default theme using MUI's createTheme
 const defaultTheme = createTheme();
 
+// Main SignIn component
 export default function SignIn() {
+  // State for managing error and success messages
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
+  // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    event.preventDefault(); // Prevent default form submission behavior
+    const form = event.currentTarget; // Get the form element
+    const data = new FormData(form); // Create a new FormData object from the form
     const formData: RegisterFormData = {
-    username: data.get('username')!.toString(),
-    password: data.get('password')!.toString(),
+      username: data.get('username')!.toString(), // Get the username from the form data
+      password: data.get('password')!.toString(), // Get the password from the form data
     };
-  
+
     try {
+      // Attempt to log in using the provided credentials
       const token = await loginApi(formData.username, formData.password);
       console.log('Token:', token);
-      Cookies.set('token', token); // Save token to cookies
-  
+      Cookies.set('token', token); // Save the token in cookies
+
       const cookieToken = Cookies.get('token');
       console.log('Cookie Token:', cookieToken);
-  
-      setSuccessMessage('Login successful!');
+
+      setSuccessMessage('Login successful!'); // Set success message
       setErrorMessage(null); // Clear any previous error messages
+
+      form.reset(); // Reset the form
     } catch (error) {
       console.error('Login failed:', error);
-      setErrorMessage('Login failed. Please check your username and password and try again.');
+      setErrorMessage('Login failed. Please check your username and password and try again.'); // Set error message
       setSuccessMessage(null); // Clear any previous success messages
     }
   };
 
+  // Render the component
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -85,8 +94,8 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-          {successMessage && <Alert severity="success">{successMessage}</Alert>}
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>} 
+          {successMessage && <Alert severity="success">{successMessage}</Alert>} 
           <Box
             component="form"
             onSubmit={handleSubmit}
