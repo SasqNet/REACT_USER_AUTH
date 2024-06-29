@@ -53,8 +53,8 @@ export default function SignIn() {
     const form = event.currentTarget; // Get the form element
     const data = new FormData(form); // Create a new FormData object from the form
     const formData: RegisterFormData = {
-      username: data.get("username")!.toString(), // Get the username from the form data
-      password: data.get("password")!.toString(), // Get the password from the form data
+      username: data.get("username") as string, // Get the username from the form data
+      password: data.get("password") as string, // Get the password from the form data
     };
 
     try {
