@@ -13,8 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
-import { loginApi } from "../utils/api/userAuth";
-import Cookies from 'js-cookie';
+import { loginApi, logoutApi } from "../utils/api/userAuth";
+import Cookies from "js-cookie";
 import { RegisterFormData } from "../interface"; // Importing form data interface
 
 // Copyright component to display footer copyright information
@@ -43,7 +43,9 @@ const defaultTheme = createTheme();
 export default function SignIn() {
   // State for managing error and success messages
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(
+    null
+  );
 
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,26 +53,42 @@ export default function SignIn() {
     const form = event.currentTarget; // Get the form element
     const data = new FormData(form); // Create a new FormData object from the form
     const formData: RegisterFormData = {
-      username: data.get('username')!.toString(), // Get the username from the form data
-      password: data.get('password')!.toString(), // Get the password from the form data
+      username: data.get("username")!.toString(), // Get the username from the form data
+      password: data.get("password")!.toString(), // Get the password from the form data
     };
 
     try {
       // Attempt to log in using the provided credentials
       const token = await loginApi(formData.username, formData.password);
-      console.log('Token:', token);
-      Cookies.set('token', token); // Save the token in cookies
+      console.log("Token:", token);
+      Cookies.set("token", token); // Save the token in cookies
 
-      const cookieToken = Cookies.get('token');
-      console.log('Cookie Token:', cookieToken);
+      const cookieToken = Cookies.get("token");
+      console.log("Cookie Token:", cookieToken);
 
-      setSuccessMessage('Login successful!'); // Set success message
+      setSuccessMessage("Login successful!"); // Set success message
       setErrorMessage(null); // Clear any previous error messages
 
       form.reset(); // Reset the form
     } catch (error) {
-      console.error('Login failed:', error);
-      setErrorMessage('Login failed. Please check your username and password and try again.'); // Set error message
+      console.error("Login failed:", error);
+      setErrorMessage(
+        "Login failed. Please check your username and password and try again."
+      ); // Set error message
+      setSuccessMessage(null); // Clear any previous success messages
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+      console.log("Logout successful");
+      Cookies.remove("token"); // Remove the token from cookies
+      setSuccessMessage("Logout successful!"); // Set success message
+      setErrorMessage(null); // Clear any previous error messages
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setErrorMessage("Logout failed. Please try again."); // Set error message
       setSuccessMessage(null); // Clear any previous success messages
     }
   };
@@ -94,8 +112,8 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          {errorMessage && <Alert severity="error">{errorMessage}</Alert>} 
-          {successMessage && <Alert severity="success">{successMessage}</Alert>} 
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+          {successMessage && <Alert severity="success">{successMessage}</Alert>}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -133,6 +151,14 @@ export default function SignIn() {
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleLogout}
+              sx={{ mt: 1, mb: 2 }}
+            >
+              Logout
             </Button>
             <Grid container>
               <Grid item xs>

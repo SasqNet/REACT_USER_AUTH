@@ -1,4 +1,5 @@
 import BASE_URL from './BaseUrl';
+import Cookies from 'js-cookie';
 
 export async function loginApi(username: string, password: string): Promise<any> {
   try {
@@ -48,4 +49,28 @@ export async function signupApi(firstName: string, lastName: string, username: s
       throw error;
     }
   }
+
+
+  export async function logoutApi(): Promise<any> {
+    try {
+      const response = await fetch(`${BASE_URL}/users/logout/`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${Cookies.get('token')}`, // Assuming the token is stored in local storage
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+  
+      console.log('Logout successful');
+      localStorage.removeItem('token'); // Remove the token from local storage
+      return response.status;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }  
   
